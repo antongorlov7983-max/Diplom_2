@@ -25,9 +25,11 @@ def registered_user(user_cleanup):
 
     with allure.step("Создать уникального пользователя"):
         response = api.register_user(payload)
-        assert response.status_code == 200
-        data = response.json()
-
+        
+        if response.status_code != 200:
+            pytest.fail(f"Неудалось создать пользователя:{response.status_code}, {response.text}")
+        
+    data = response.json()
     user_cleanup(data["accessToken"])
     return {
         "email": data["user"]["email"],
